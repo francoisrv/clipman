@@ -8,7 +8,7 @@ import help, { usage } from './help'
 import clipop from 'clipop'
 import parseArgs from './parseArgs'
 import colors from 'colors'
-import { compact } from 'lodash'
+import { compact, isEmpty } from 'lodash'
 
 function findContext(options: any, ...args: string[]) {
   if (options.commands) {
@@ -45,21 +45,32 @@ export default async function run(app: string, ...args: string[]) {
     if (options.help) {
       return await help(ctx)
     }
+
+    if (!ctx.entry) {
+      if (!isEmpty(ctx.commands)) {
+        throw new Error('Missing command')
+      }
+      return ''
+    }
   
     const params = await parseArgs(ctx.options, options)
-  
+
     return new Promise((resolve, reject) => {
       const ps = spawn(
         'node',
         [
           '-e',
           `
-          const file = '${ join(base, ctx.entry) }'
-          const imported = require(file)
-          const fn = imported.default || imported
-          const options = JSON.parse('${ JSON.stringify(params) }')
-          const res = fn(options)
-          console.log(JSON.stringify(res))
+          async function run() {
+            const file = '${ join(base, ctx.entry) }'
+            const imported = require(file)
+            const fn = imported.default || imported
+            const options = JSON.parse('${ JSON.stringify(params) }')
+            const res = await fn(options)
+            console.log(JSON.stringify(res))
+          }
+
+          run()
           `
         ],
         {

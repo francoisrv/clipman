@@ -1,6 +1,6 @@
 {
   "name": "clipman",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": false,
   "description": "Helper to write and run nodejs apps from the terminal",
   "main": "dist/index.js",

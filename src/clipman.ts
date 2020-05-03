@@ -3,8 +3,9 @@ import run from './lib/run'
 import colors from 'colors'
 import init from './lib/init'
 
-function fail(message: string) {
+function fail(message: string, stack = '') {
   console.log(colors.red(message))
+  console.log(colors.yellow(stack))
   process.exit(1)
 }
 
@@ -34,5 +35,5 @@ async function clipman() {
 
 clipman()
   .catch(error => {
-    fail(error.message)
+    fail(error.message, error.stack)
   })
