@@ -91,7 +91,7 @@ export default async function help(options: any) {
     '* Usage',
     usage(options),
     await showOptions(options.options),
-    colors.grey.italic('made with clipr')
+    colors.grey.italic('made with clipman')
   ])
   return parts.join('\n\n')
 }

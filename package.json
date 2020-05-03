@@ -1,6 +1,6 @@
 {
   "name": "clipman",
-  "version": "1.0.1",
+  "version": "1.6.0",
   "private": false,
   "description": "Helper to write and run nodejs apps from the terminal",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
     "prepublishOnly": "npm run build"
   },
   "bin": {
-    "clipr": "./dist/app/clipr.js"
+    "clipman": "./dist/clipman.js"
   },
   "author": "",
   "license": "ISC",

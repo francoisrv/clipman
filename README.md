@@ -44,7 +44,7 @@ hello-world <options>
 
 --name       string     Who to greet (optional, default: "world")
 
-made with clipr
+made with clipman
 ```
 
 Let's try to pass it an option
@@ -57,7 +57,7 @@ clipman run hello-world --name javascript
 Hello javascript!
 ```
 
-Let's change our `hello-world/clipr.json`:
+Let's change our `hello-world/clipman.json`:
 
 ```json
 {

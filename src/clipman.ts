@@ -1,19 +1,38 @@
+#! /usr/bin/env node
 import run from './lib/run'
+import colors from 'colors'
+import init from './lib/init'
 
-async function clipr() {
+function fail(message: string) {
+  console.log(colors.red(message))
+  process.exit(1)
+}
+
+async function clipman() {
   const [,, command, ...args] = process.argv
 
   if (!command) {
-    throw new Error('Missing command')
+    fail('Missing command')
   }
+  
   switch (command) {
-    default: throw new Error(`Unknwon command: ${ command }`)
+    default: {
+      fail((`Unknwon command: ${ command }`))
+    } break
     case 'run': {
       const app = args.shift() as string
       const res = await run(app, ...args)
       console.log(res)
     } break
+    case 'init': {
+      const app = args.shift() || process.cwd()
+      const res = await init(app)
+      console.log(res)
+    } break
   }
 }
 
-clipr()
+clipman()
+  .catch(error => {
+    fail(error.message)
+  })
