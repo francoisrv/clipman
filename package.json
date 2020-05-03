@@ -1,0 +1,30 @@
+{
+  "name": "clipman",
+  "version": "1.0.1",
+  "private": false,
+  "description": "Helper to write and run nodejs apps from the terminal",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf dist && tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "bin": {
+    "clipr": "./dist/app/clipr.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^13.7.1",
+    "@types/node-notifier": "^5.4.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "clipop": "^1.0.3",
+    "colors": "^1.4.0",
+    "lodash": "^4.17.15",
+    "node-notifier": "^6.0.0"
+  }
+}
