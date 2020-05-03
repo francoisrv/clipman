@@ -1,6 +1,4 @@
-import clipop from 'clipop'
-import run from '../lib/run'
-import { CliprOptions } from '../types'
+import run from './lib/run'
 
 async function clipr() {
   const [,, command, ...args] = process.argv
