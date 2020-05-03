@@ -66,8 +66,13 @@ export default async function run(app: string, ...args: string[]) {
             const imported = require(file)
             const fn = imported.default || imported
             const options = JSON.parse('${ JSON.stringify(params) }')
-            const res = await fn(options)
-            console.log(JSON.stringify(res))
+            try {
+              const res = await fn(options)
+              console.log(JSON.stringify(res))
+            } catch (error) {
+              console.log(error.message)
+              process.exit(1)
+            }
           }
 
           run()
@@ -81,9 +86,17 @@ export default async function run(app: string, ...args: string[]) {
       ps.stdout.on('data', data => {
         res.push(data.toString())
       })
-      ps.on('close', () => {
+      ps.on('close', (status) => {
         const response = res.join('')
-        resolve(JSON.parse(response))
+        if (status === 1) {
+          reject(new Error(response))
+        } else {
+          try {
+            resolve(JSON.parse(response))
+          } catch (error) {
+            resolve(response)
+          }
+        }
       })
       ps.on('error', reject)
     })
