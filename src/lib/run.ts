@@ -5,7 +5,7 @@ import colors from 'colors'
 import { compact, isEmpty, some } from 'lodash'
 import shortid from 'shortid'
 
-import { CliprOptions } from '../types'
+import { ClipmanOptions } from '../types'
 import { getJson } from './utils'
 import help, { usage } from './help'
 import parseArgs from './parseArgs'
@@ -40,7 +40,7 @@ export default async function run(app: string, ...args: string[]) {
     const file = /^\//.test(app) ? app : join(process.cwd(), app)
     const base = dirname(file)
     const cliprJson = await getJson(file)
-    const options = clipop<CliprOptions>(...args)
+    const options = clipop<ClipmanOptions>(...args)
   
     ctx = findContext(cliprJson, ...args)
     
@@ -59,6 +59,10 @@ export default async function run(app: string, ...args: string[]) {
 
     const tmp = `/tmp/clipman-${ shortid.generate() }.json`
 
+    const clipmanOptions = {
+      arguments: args
+    }
+
     return new Promise((resolve, reject) => {
       const ps = spawn(
         'node',
@@ -73,10 +77,15 @@ export default async function run(app: string, ...args: string[]) {
             const imported = require(file)
             const fn = imported.default || imported
             const options = JSON.parse('${ JSON.stringify(params) }')
+            const clipmanOptions = JSON.parse('${ JSON.stringify(clipmanOptions) }')
             try {
-              const res = await fn(options)
-              await promisify(writeFile)('${ tmp }', JSON.stringify(res))
+              const res = await fn(options, clipmanOptions)
+              await promisify(writeFile)(
+                '${ tmp }',
+                typeof res === 'undefined' ? '""' : JSON.stringify(res)
+              )
             } catch (error) {
+              console.log(error)
               await promisify(writeFile)('${ tmp }', JSON.stringify({
                 '!!!clipmanError!!!': {
                   ...error,
@@ -107,22 +116,20 @@ export default async function run(app: string, ...args: string[]) {
         try {
           response = await promisify(readFile)(tmp)
         } catch (error) {
-          if (status === 0) {
-            reject(new Error('Command ran ok but response could not be saved'))
+          if (status !== 0) {
+            reject(new Error(`Command failed with status ${ status } and response was not saved`))
             return
           }
-          reject(new Error(`Command failed with status ${ status } and response could not be saved`))
-          return
         }
         if (response) {
           try {
             res = JSON.parse(response.toString())
           } catch (error) {
             if (status === 0) {
-              reject(new Error('Command ran ok but response could not be parsed'))
+              resolve('')
               return
             }
-            reject(new Error(`Command failed with status ${ status } and response could not be parsed`))
+            reject(new Error(`Command failed with status ${ status } and response was not parsed`))
             return
           }
         }

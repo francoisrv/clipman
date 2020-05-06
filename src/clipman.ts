@@ -30,6 +30,9 @@ async function clipman() {
       const res = await init(app)
       console.log(res)
     } break
+    case 'help': {
+      
+    } break
   }
 }
 
