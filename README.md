@@ -92,4 +92,4 @@ Hello node!
 - [Commands](here.md)
 - [Config](here.md)
 - [JS API](./docs/js-api.md)
-- [Options](here.md)
+- [Options](./docs/options.md)
