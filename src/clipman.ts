@@ -31,7 +31,9 @@ async function clipman() {
       console.log(res)
     } break
     case 'help': {
-      
+      const app = args.shift() as string
+      const res = await run(app, ...args, '--help')
+      console.log(res)
     } break
   }
 }
