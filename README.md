@@ -15,7 +15,7 @@ npm install --global clipman
 clipman init hello-world
 ```
 
-This creates a new clipman app which files you can see [here](here.md)
+This creates a new clipman app
 
 You can now run your new clipman app
 
