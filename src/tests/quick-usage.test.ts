@@ -4,7 +4,7 @@ import shortid from "shortid"
 import { YOUR_APP_IS_READY } from "../messages"
 import help from "../lib/help"
 import { join } from "path"
-import { readFile } from "fs"
+import { readFile, writeFile } from "fs"
 
 const target = `/tmp/clipman-test-${ shortid.generate() }`
 const json = join(target, 'clipman.json')
@@ -27,4 +27,17 @@ test('it should run new app', async () => {
 test('it should display help', async () => {
   const { stdout } = await promisify(exec)(`node ./dist/clipman help ${ target }`)
   expect(stdout.replace(/\n$/, '')).toEqual(await help(await getJson()))
+})
+
+test('it should run new app with option', async () => {
+  const { stdout } = await promisify(exec)(`node ./dist/clipman run ${ target } --name javascript`)
+  expect(stdout.replace(/\n$/, '')).toEqual('Hello, javascript!')
+})
+
+test('it should accept changes', async () => {
+  const content = await getJson()
+  content.options.name.default.value = 'node'
+  await promisify(writeFile)(json, JSON.stringify(content, null, 2))
+  const { stdout } = await promisify(exec)(`node ./dist/clipman run ${ target }`)
+  expect(stdout.replace(/\n$/, '')).toEqual('Hello, node!')
 })
