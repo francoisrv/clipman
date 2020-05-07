@@ -1,14 +1,14 @@
 {
   "name": "clipman",
-  "version": "1.7.7",
+  "version": "1.7.8",
   "private": false,
   "description": "Helper to write and run nodejs apps from the terminal",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest dist",
     "build": "rm -rf dist && tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build && npm t"
   },
   "bin": {
     "clipman": "./dist/clipman.js"
@@ -20,15 +20,17 @@
     "url": "https://github.com/francoisrv/clipman"
   },
   "devDependencies": {
+    "@types/jest": "^25.2.1",
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.7.1",
+    "jest": "^26.0.1",
+    "shortid": "^2.2.15",
     "typescript": "^3.7.5"
   },
   "dependencies": {
     "@types/shortid": "0.0.29",
     "clipop": "^1.0.3",
     "colors": "^1.4.0",
-    "lodash": "^4.17.15",
-    "shortid": "^2.2.15"
+    "lodash": "^4.17.15"
   }
 }

@@ -1,7 +1,8 @@
 import { promisify } from "util"
-import { stat, mkdir, writeFile } from "fs"
+import { mkdir, writeFile } from "fs"
 import { compact } from "lodash"
-import { dirname, basename, join } from "path"
+import { basename, join } from "path"
+import { YOUR_APP_IS_READY } from "../messages"
 
 async function createDirectory(dir: string) {
   try {
@@ -21,7 +22,6 @@ export default async function init(app: string) {
     await createDirectory(dir.join('/'))
   }
   const root = dir.join('/')
-  const base = dirname(root)
   const name = basename(root)
   await promisify(writeFile)(
     join(root, 'clipman.json'),
@@ -47,4 +47,5 @@ export default async function init(app: string) {
 }
 `
   )
+  return YOUR_APP_IS_READY(app)
 }

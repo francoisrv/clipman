@@ -10,6 +10,7 @@ export default async function parseArgs(config: any, options: any) {
       params[option] = await getDefaultValue(config[option].default)
     }
   }
+
   for (const option in config) {
     if (config[option].required && !(option in params)) {
       if (config[option].required === true) {

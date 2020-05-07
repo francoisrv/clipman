@@ -10,7 +10,7 @@ import { getJson } from './utils'
 import help, { usage } from './help'
 import parseArgs from './parseArgs'
 import { promisify } from 'util'
-import { readFile } from 'fs'
+import { readFile, stat } from 'fs'
 
 function findContext(options: any, ...args: string[]) {
   if (options.commands) {
@@ -37,7 +37,13 @@ export default async function run(app: string, ...args: string[]) {
       throw new Error('Missing app')
     }
     
-    const file = /^\//.test(app) ? app : join(process.cwd(), app)
+    const entry = /^\//.test(app) ? app : join(process.cwd(), app)
+    let file = entry
+    const stats = await promisify(stat)(entry)
+    if (stats.isDirectory()) {
+      file = join(entry, 'clipman.json')
+      await promisify(stat)(file)
+    }
     const base = dirname(file)
     const cliprJson = await getJson(file)
     const options = clipop<ClipmanOptions>(...args)
