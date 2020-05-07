@@ -1,31 +1,31 @@
 import parseArgs from './parseArgs'
 
-test('it should fail required=true', async () => {
-  const config = {
-    foo: {
-      required: true
-    }
-  }
-  const options = {}
-  return expect(parseArgs(config, options))
+async function expectToPass(config: any, input: any, result: any) {
+  expect(await parseArgs(config, input)).toEqual(result)
+}
+
+async function expectToFail(config: any, input: any, errorMessage: string) {
+  return expect(parseArgs(config, input))
     .rejects
-    .toHaveProperty('message', 'Missing required option: foo')
+    .toHaveProperty('message', errorMessage)
+}
+
+test('it should fail if a required option is missing', async () => expectToFail(
+  { foo: { required: true } },
+  {},
+  'Missing required option: foo'
+))
+
+test('it should pass if required option is present', async () => {
+  await expectToPass(
+    { foo: { required: true } },
+    { foo: true },
+    { foo: true }
+  )
 })
 
-test('it should pass required=true', async () => {
-  const config = {
-    foo: {
-      required: true
-    }
-  }
-  const options = {
-    foo: true
-  }
-  expect(await parseArgs(config, options)).toEqual({ foo: true })
-})
-
-test('it should apply required if options.bar is above 2', async () => {
-  const config = {
+test('it should fail if a conditional required option is missing', async () => expectToFail(
+  {
     foo: {
       required: {
         if: 'options.bar > 2'
@@ -34,28 +34,38 @@ test('it should apply required if options.bar is above 2', async () => {
     bar: {
       type: 'number'
     }
-  }
-  const options = {
-    bar: 3
-  }
-  return expect(parseArgs(config, options))
-    .rejects
-    .toHaveProperty('message', 'Missing required option: foo')
+  },
+  { bar: 3 },
+  'Missing required option: foo'
+))
+
+test('it should pass if a conditional required is met', async () => {
+  await expectToPass(
+    {
+      foo: {
+        required: {
+          if: 'options.bar > 2'
+        }
+      },
+      bar: {}
+    },
+    { bar: 1 },
+    { bar: 1 }
+  )
 })
 
-test('it should fail if options.bar is below 2', async () => {
-  const config = {
-    foo: {
-      required: {
-        if: 'options.bar > 2'
-      }
-    },
-    bar: {
-      type: 'number'
-    }
-  }
-  const options = {
-    bar: 1
-  }
-  return expect(await parseArgs(config, options)).toEqual({ bar: 1 })
+test('it should apply default value', async () => {
+  await expectToPass(
+    { foo: { default: { value: 100 } } },
+    {},
+    { foo: 100 }
+  )
+})
+
+test('it should execute command for default value', async () => {
+  await expectToPass(
+    { foo: { default: { command: 'pwd' } } },
+    {},
+    { foo: process.cwd() }
+  )
 })

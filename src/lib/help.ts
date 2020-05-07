@@ -41,11 +41,7 @@ export async function showOptions(options: any): Promise<string> {
     if (required === true) {
       more.push(colors.yellow('required'))
     } else if (required.if) {
-      const conditions: string[] = []
-      if (required.if.absent) {
-        conditions.push(colors.italic(`if the following option(s) are missing: ${ required.if.absent }`))
-      }
-      more.push(colors.yellow('required'), conditions.join('and'))
+      more.push(colors.yellow('required'), `if ${ required.if }`)
     } else {
       more.push('optional')
     }

@@ -84,4 +84,53 @@ One of these two options should be required. We can use templating where `option
 
 Default values for the option if it's missing. You can use `value` to specify a value:
 
+```json
+{
+  "options": {
+    "cores": {
+      "description": "Number of cores",
+      "default": {
+        "value": 1
+      }
+    }
+  }
+}
+```
+
+You could also use a command to will be executed to determine what the default value should be
+
+```json
+{
+  "options": {
+    "cores": {
+      "description": "Number of cores",
+      "deault": {
+        "command": "nproc"
+      }
+    }
+  }
+}
+```
+
+You can also use [lodash templates](https://lodash.com/docs/4.17.15#template)
+
+```json
+{
+  "options": {
+    "performance": {
+      "description": "Choose a performance mode",
+      "type": ["low", "medium", "high"],
+      "default": {
+        "value": "medium"
+      }
+    },
+    "cores": {
+      "description": "Number of cores",
+      "deault": {
+        "command": ""
+      }
+    }
+  }
+}
+```
 
