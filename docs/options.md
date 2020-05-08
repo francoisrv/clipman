@@ -112,22 +112,23 @@ You could also use a command to will be executed to determine what the default v
 }
 ```
 
-You can also use [lodash templates](https://lodash.com/docs/4.17.15#template)
+You can also use [lodash templates](https://lodash.com/docs/4.17.15#template) in both `value` and `command`
 
 ```json
 {
   "options": {
     "performance": {
       "description": "Choose a performance mode",
-      "type": ["low", "medium", "high"],
+      "type": ["low", "high"],
       "default": {
-        "value": "medium"
+        "value": "high"
       }
     },
     "cores": {
       "description": "Number of cores",
-      "deault": {
-        "command": ""
+      "type": "number",
+      "default": {
+        "command": "{{ options.performance === 'high' ? 'nproc' : 1 }}"
       }
     }
   }

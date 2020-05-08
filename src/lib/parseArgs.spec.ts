@@ -1,4 +1,5 @@
 import parseArgs from './parseArgs'
+import * as os from 'os'
 
 async function expectToPass(config: any, input: any, result: any) {
   expect(await parseArgs(config, input)).toEqual(result)
@@ -56,7 +57,7 @@ test('it should pass if a conditional required is met', async () => {
 
 test('it should apply default value', async () => {
   await expectToPass(
-    { foo: { default: { value: 100 } } },
+    { foo: { default: { value: 100 }, type: 'number' } },
     {},
     { foo: 100 }
   )
@@ -68,4 +69,24 @@ test('it should execute command for default value', async () => {
     {},
     { foo: process.cwd() }
   )
+})
+
+test('it should apply templates for default value', async () => {
+  const options = {
+    performance: {
+      type: ['low', 'high'],
+      default: { value: 'high' }
+    },
+    cores: {
+      type: 'number',
+      default: {
+        command: "{{ options.performance === 'high' ? 'nproc' : 'echo 1' }}"
+      }
+    }
+  }
+  const inputHigh = {}
+  await expectToPass(options, inputHigh, {
+    performance: 'high',
+    cores: os.cpus().length
+  })
 })

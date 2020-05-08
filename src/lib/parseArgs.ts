@@ -7,7 +7,13 @@ export default async function parseArgs(config: any, options: any) {
     if (option in options) {
       params[option] = options[option]
     } else if ('default' in config[option]) {
-      params[option] = await getDefaultValue(config[option].default)
+      params[option] = await getDefaultValue(config[option].default, config[option].type || 'string', { options })
+    }
+  }
+
+  for(const option in config) {
+    if ('default' in config[option]) {
+      params[option] = await getDefaultValue(config[option].default, config[option].type || 'string', { options: params })
     }
   }
 
