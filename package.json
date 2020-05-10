@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@types/shortid": "0.0.29",
+    "castr": "0.0.0",
     "clipop": "^1.0.3",
     "colors": "^1.4.0",
     "lodash": "^4.17.15"

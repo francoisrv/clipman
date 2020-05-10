@@ -4,31 +4,15 @@ import clipop from 'clipop'
 import colors from 'colors'
 import { compact, isEmpty, some } from 'lodash'
 import shortid from 'shortid'
-
-import { ClipmanOptions } from '../types'
-import { getJson } from './utils'
-import help, { usage } from './help'
-import parseArgs from './parseArgs'
 import { promisify } from 'util'
 import { readFile, stat } from 'fs'
 
-function findContext(options: any, ...args: string[]) {
-  if (options.commands) {
-    const nextArgs = [...args]
-    const command = nextArgs.shift()
-    if (command && command in options.commands) {
-      return findContext(
-        {
-          name: `${ options.name } ${ command }`,
-          version: options.version,
-          ...options.commands[command],
-        },
-        ...nextArgs
-      )
-    }
-  }
-  return options
-}
+import { ClipmanOptions } from '../types'
+import help, { usage } from './help'
+import getJson from '../helpers/getJson'
+import findContext from '../helpers/findContext'
+import parseArgs from '../helpers/parseArgs'
+import ensureRequired from '../helpers/ensureRequired'
 
 export default async function run(app: string, ...args: string[]) {
   let ctx: any
@@ -39,10 +23,17 @@ export default async function run(app: string, ...args: string[]) {
     
     const entry = /^\//.test(app) ? app : join(process.cwd(), app)
     let file = entry
-    const stats = await promisify(stat)(entry)
-    if (stats.isDirectory()) {
+    const create = async () => {
       file = join(entry, 'clipman.json')
       await promisify(stat)(file)
+    }
+    try {
+      const stats = await promisify(stat)(entry)
+      if (stats.isDirectory()) {
+        await create()
+      }
+    } catch (error) {
+      await create()
     }
     const base = dirname(file)
     const cliprJson = await getJson(file)
@@ -63,52 +54,28 @@ export default async function run(app: string, ...args: string[]) {
   
     const params = await parseArgs(ctx.options, options)
 
+    console.log({params})
+
+    ensureRequired(ctx.options, params)
+
     const tmp = `/tmp/clipman-${ shortid.generate() }.json`
 
     const clipmanOptions = {
-      arguments: args
+      arguments: args,
     }
+
+    const execArgs = [
+      join(base, ctx.entry),
+      JSON.stringify(params),
+      JSON.stringify(clipmanOptions),
+      tmp
+    ]
 
     return new Promise((resolve, reject) => {
       const ps = spawn(
         'node',
-        [
-          '-e',
-          `
-          const { promisify } = require('util')
-          const { writeFile } = require('fs')
-          
-          async function run() {
-            const file = '${ join(base, ctx.entry) }'
-            const imported = require(file)
-            const fn = imported.default || imported
-            const options = JSON.parse('${ JSON.stringify(params) }')
-            const clipmanOptions = JSON.parse('${ JSON.stringify(clipmanOptions) }')
-            try {
-              const res = await fn(options, clipmanOptions)
-              await promisify(writeFile)(
-                '${ tmp }',
-                typeof res === 'undefined' ? '""' : JSON.stringify(res)
-              )
-            } catch (error) {
-              console.log(error)
-              await promisify(writeFile)('${ tmp }', JSON.stringify({
-                '!!!clipmanError!!!': {
-                  ...error,
-                  stack: error.stack,
-                  message: error.message
-                }
-              }))
-              process.exit(1)
-            }
-          }
-
-          run()
-          `
-        ],
-        {
-          cwd: base
-        }
+        [join(__dirname, 'execCommand'), ...execArgs],
+        { cwd: base }
       )
       ps.stdout.on('data', data => {
         console.log(data.toString())
@@ -141,11 +108,25 @@ export default async function run(app: string, ...args: string[]) {
         }
         if (res) {
           if (status === 0) {
-            resolve(res)
-          } else if (res['!!!clipmanError!!!']) {
-            reject(new Error(res['!!!clipmanError!!!'].message))
+            if (res.error) {
+              let err = new Error(res.error.message)
+              for (const key in res.error) {
+                err[key] = res.error[key]
+              }
+              reject(err)
+            } else {
+              resolve(res.response)
+            }
           } else {
-            reject(new Error(`Command failed with status ${ status }`))
+            if (res.error) {
+              let err = new Error(res.error.message)
+              for (const key in res.error) {
+                err[key] = res.error[key]
+              }
+              reject(err)
+            } else {
+              reject(new Error(`Command failed with status ${ status }`))
+            }
           }
         }
       })

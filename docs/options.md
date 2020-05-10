@@ -89,6 +89,7 @@ Default values for the option if it's missing. You can use `value` to specify a 
   "options": {
     "cores": {
       "description": "Number of cores",
+      "type": "number",
       "default": {
         "value": 1
       }
@@ -104,7 +105,8 @@ You could also use a command to will be executed to determine what the default v
   "options": {
     "cores": {
       "description": "Number of cores",
-      "deault": {
+      "type": "number",
+      "default": {
         "command": "nproc"
       }
     }
@@ -112,7 +114,7 @@ You could also use a command to will be executed to determine what the default v
 }
 ```
 
-You can also use [lodash templates](https://lodash.com/docs/4.17.15#template) in both `value` and `command`
+You can also use [lodash templates](https://lodash.com/docs/4.17.15#template) in both `value` and `command` by adding `"useTemplate": true`
 
 ```json
 {
@@ -128,7 +130,8 @@ You can also use [lodash templates](https://lodash.com/docs/4.17.15#template) in
       "description": "Number of cores",
       "type": "number",
       "default": {
-        "command": "{{ options.performance === 'high' ? 'nproc' : 1 }}"
+        "command": "{{ options.performance === 'high' ? 'nproc' : 1 }}",
+        "useTemplate": true
       }
     }
   }
