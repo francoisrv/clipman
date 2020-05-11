@@ -16,7 +16,7 @@ describe('Type parsing', () => {
     expect(parsed).toEqual(expected)
   }
   
-  it.only('should default to string', () => {
+  it('should default to string', () => {
     expectToParseType({ foo: {} }, { foo: 1 }, { foo: '1' })
   })
 
@@ -34,7 +34,7 @@ describe('Type parsing', () => {
 
   it('should apply objects', () => {
     expectToParseType({
-      foo: { type: { bar: 'string' } }
+      'foo.bar': { type: 'string' }
     }, {
       foo: { bar: 22 }
     }, {

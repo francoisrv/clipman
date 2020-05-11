@@ -1,12 +1,14 @@
 import applyType from './applyType'
 import { getDefaultValue } from './getDefaultValue'
 import { ClipmanInputOptions, ClipmanOptionSchema } from '../types'
+import { has, set, get } from 'lodash'
 
 export function parseType(optionSchema: ClipmanOptionSchema, options: ClipmanInputOptions): ClipmanInputOptions {
   const params: ClipmanInputOptions = {}
   for (const option in optionSchema) {
-    if (option in options) {
-      params[option] = applyType(optionSchema[option].type || 'string', options[option])
+    if (has(options, option)) {
+      const value = get(options, option)
+      set(params, option, applyType(optionSchema[option].type || 'string', value))
     }
   }
   return params

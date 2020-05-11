@@ -138,3 +138,91 @@ You can also use [lodash templates](https://lodash.com/docs/4.17.15#template) in
 }
 ```
 
+## Types
+
+They are 3 types you can get:
+
+- string
+- number
+- boolean
+
+If none is specified, string is used
+
+It means value will be cast to the type declared
+
+```json
+{
+  "options": {
+    "foo": { "type": "number" },
+    "bar": { "type": "number" }
+  }
+}
+```
+
+```bash
+my-app --foo --bar 1
+```
+
+```json
+{
+  "foo": 1,
+  "bar": 1
+}
+```
+
+Objects have to be declared via their keys:
+
+```json
+{
+  "options": {
+    "foo.bar": { "type": "number" },
+    "bar.foo.barz": { "type": "boolean" }
+  }
+}
+```
+
+```bash
+my-app --foo.bar 1 --bar.foo.barz 1
+```
+
+```json
+{
+  "foo": {
+    "bar": 1
+  },
+  "bar": {
+    "foo": {
+      "barz": true
+    }
+  }
+}
+```
+
+Same goes with array
+
+```json
+{
+  "options": {
+    "foo[0]": { "type": "number" },
+    "bar[0].foo": { "type": "boolean" }
+  }
+}
+```
+
+```bash
+my-app --foo[0] 1 --bar[0].barz 1
+```
+
+```json
+{
+  "foo": [
+    1
+  ],
+  "bar": [
+    {
+      "barz": true
+    }
+  ]
+}
+```
+
