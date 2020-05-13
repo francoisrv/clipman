@@ -10,6 +10,7 @@ We use [clipop](https://www.npmjs.com/package/clipop) to parse arguments from co
 ```ts
 interface Option {
   description?: string
+  null?: true
   required?: boolean | { if: string }
   default?: { value: any } | { command: string }
   type?: 'boolean' | 'string' | 'number'
@@ -225,4 +226,3 @@ my-app --foo[0] 1 --bar[0].barz 1
   ]
 }
 ```
-

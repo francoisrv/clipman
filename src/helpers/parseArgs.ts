@@ -3,26 +3,38 @@ import { getDefaultValue } from './getDefaultValue'
 import { ClipmanInputOptions, ClipmanOptionSchema } from '../types'
 import { has, set, get } from 'lodash'
 
-export function parseType(optionSchema: ClipmanOptionSchema, options: ClipmanInputOptions): ClipmanInputOptions {
+export function parseType(schema: ClipmanOptionSchema, options: ClipmanInputOptions): ClipmanInputOptions {
   const params: ClipmanInputOptions = {}
-  for (const option in optionSchema) {
+  for (const option in schema) {
     if (has(options, option)) {
       const value = get(options, option)
-      set(params, option, applyType(optionSchema[option].type || 'string', value))
+      set(params, option, applyType(schema[option].type || 'string', value))
     }
   }
   return params
 }
 
-export async function parseDefault(optionSchema: ClipmanOptionSchema, options: ClipmanInputOptions): Promise<ClipmanInputOptions> {
+export async function parseDefault(schema: ClipmanOptionSchema, options: ClipmanInputOptions): Promise<ClipmanInputOptions> {
   const params: ClipmanInputOptions = {}
-  for (const option in optionSchema) {
-    if ('default' in optionSchema[option] && !(option in params) && !optionSchema[option].useTemplate) {
-      params[option] = await getDefaultValue(optionSchema[option].default, optionSchema[option].type || 'string', { options: params })
+  
+  for (const option in schema) {
+    const schemaOption = schema[option]
+    const optionValue = get(options, option)
+    const { type = 'string' } = schemaOption
+    if (
+      'default' in schemaOption &&
+      typeof optionValue === 'undefined' &&
+      !schemaOption.useTemplate
+    ) {
+      const value = await getDefaultValue(schemaOption.default, type, {
+        options: params
+      })
+      set(params, option, value)
     } else {
-      params[option] = optionSchema[option]
+      set(params, option, optionValue)
     }
   }
+  
   return params
 }
 
