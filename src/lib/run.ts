@@ -7,7 +7,7 @@ import shortid from 'shortid'
 import { promisify } from 'util'
 import { readFile, stat } from 'fs'
 
-import { ClipmanOptions } from '../types'
+import { ClipmanOptions, ClipmanInputOptions } from '../types'
 import help, { usage } from './help'
 import getJson from '../helpers/getJson'
 import findContext from '../helpers/findContext'
@@ -37,7 +37,7 @@ export default async function run(app: string, ...args: string[]) {
     }
     const base = dirname(file)
     const cliprJson = await getJson(file)
-    const options = clipop<ClipmanOptions>(...args)
+    const options = clipop<ClipmanInputOptions>(...args)
   
     ctx = findContext(cliprJson, ...args)
     
@@ -53,8 +53,6 @@ export default async function run(app: string, ...args: string[]) {
     }
   
     const params = await parseArgs(ctx.options, options)
-
-    console.log({params})
 
     ensureRequired(ctx.options, params)
 

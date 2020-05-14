@@ -41,3 +41,13 @@ export type ClipmanOptionValue =
 | string
 | number
 | boolean
+
+export type ClipmanDefaultOption  =
+| {
+  value: ClipmanOptionValue
+  useTemplate?: boolean
+}
+| {
+  command: string
+  useTemplate?: boolean
+}

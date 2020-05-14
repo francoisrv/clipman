@@ -1,4 +1,4 @@
-import parseArgs, { parseType, parseDefault } from './parseArgs'
+import parseArgs, { parseType, mergeDefaultValues } from './parseArgs'
 import * as os from 'os'
 import { ClipmanOptionSchema, ClipmanInputOptions } from '../types'
 
@@ -45,7 +45,7 @@ describe('Defaults', () => {
     options: ClipmanInputOptions,
     expected: ClipmanInputOptions
   ) {
-    const parsed = await parseDefault(schema, options)
+    const parsed = await mergeDefaultValues(schema, options)
     expect(parsed).toEqual(expected)
   }
   
@@ -79,105 +79,56 @@ describe('Defaults', () => {
     const expected = { foo: 'lambda' }
     await expectDefault(schema, options, expected)
   })
-  it('should skip default with templates', async () => {
-    const schema = { foo: { default: { value: 'bar', useTemplate: true } } }
-    const options = {}
-    const expected = {}
+  it('should apply templates', async () => {
+    const schema = {
+      foo: {
+        default: {
+          value: '{{ options.bar }}',
+          useTemplate: true
+        }
+      }
+    }
+    const options = { bar: 'lol' }
+    const expected = { foo: 'lol', bar: 'lol' }
     await expectDefault(schema, options, expected)
   })
 })
 
-// test.only('it should parse types', () => {
-//   const schema = {
-//     foo1: {},
-//     foo2: { type: 'string' },
-//     foo3: { type: 'number' },
-//     foo4: { type: 'boolean' },
-//     'foo5.bar': { type: 'number' }
-//   }
-//   const options = {
-//     foo1: 1,
-//     foo2: true,
-//     foo3: '24',
-//     foo4: 'false',
-//     foo5: {
-//       bar: '22'
-//     }
-//   }
-//   const parsed = parseType(schema, options)
-//   expect(parsed).toHaveProperty('foo1', '1')
-//   // expect(parsed).toHaveProperty('foo2', 'true')
-//   // expect(parsed).toHaveProperty('foo3', 24)
-//   // expect(parsed).toHaveProperty('foo4', false)
-//   // expect(parsed).toHaveProperty('foo5', { bar: 22 })
-// })
+describe('Parse args', () => {
+  async function tester(
+    schema: ClipmanOptionSchema,
+    options: ClipmanInputOptions,
+    expected: any
+  ) {
+    const res = await parseArgs(schema, options)
+    expect(res).toEqual(expected)
+  }
 
-// test('it should parse types (main)', async () => {
-//   const schema = {
-//     foo1: {},
-//     foo2: { type: 'string' },
-//     foo3: { type: 'number' },
-//     foo4: { type: 'boolean' }
-//   }
-//   const options = {
-//     foo1: 1,
-//     foo2: true,
-//     foo3: '24',
-//     foo4: 'false'
-//   }
-//   await expectToPass(schema, options, {
-//     foo1: '1',
-//     foo2: 'true',
-//     foo3: 24,
-//     foo4: false
-//   })
-// })
+  it('should return empty if no schema', async () => {
+    const schema = {}
+    const options = { foo: '1' }
+    const expected = {}
+    await tester(schema, options, expected) 
+  })
 
-// test('it should apply default value', async () => {
-//   const opt = await parseArgs(
-//     {
-//       foo: {
-//         default: {
-//           value: 100
-//         },
-//         type: 'number'
-//       }
-//     },
-//     {}
-//   )
-//   console.log(opt)
-//   // await expectToPass(
-//   //   { foo: { default: { value: 100 }, type: 'number' } },
-//   //   {},
-//   //   { foo: 100 }
-//   // )
-// })
+  it('should return options if schema', async () => {
+    const schema = { foo: {} }
+    const options = { foo: '1' }
+    const expected = { foo: '1' }
+    await tester(schema, options, expected) 
+  })
 
-// test('it should execute command for default value', async () => {
-//   await expectToPass(
-//     { foo: { default: { command: 'pwd' } } },
-//     {},
-//     { foo: process.cwd() }
-//   )
-// })
+  it('should apply types', async () => {
+    const schema = { foo: { type: 'number' } }
+    const options = { foo: '1' }
+    const expected = { foo: 1 }
+    await tester(schema, options, expected) 
+  })
 
-// test('it should apply templates for default value', async () => {
-//   const options = {
-//     performance: {
-//       enum: ['low', 'high'],
-//       default: { value: 'high' }
-//     },
-//     cores: {
-//       type: 'number',
-//       default: {
-//         command: "{{ options.performance === 'high' ? 'nproc' : 'echo 1' }}",
-//         useTemplate: true
-//       }
-//     }
-//   }
-//   const inputHigh = {}
-//   await expectToPass(options, inputHigh, {
-//     performance: 'high',
-//     cores: os.cpus().length
-//   })
-// })
+  it('should apply defaults', async () => {
+    const schema = { foo: { default: { value: '1' } } }
+    const options = {}
+    const expected = { foo: '1' }
+    await tester(schema, options, expected) 
+  })
+})

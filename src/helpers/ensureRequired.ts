@@ -1,16 +1,19 @@
 import applyTemplate from "./applyTemplate"
+import { ClipmanOptionSchema, ClipmanInputOptions } from "../types"
+import { has } from "lodash"
 
-export default function ensureRequired(config: any, params: any) {
-  for (const option in config) {
-    if (config[option].required && !(option in params)) {
-      if (config[option].required === true) {
-        throw new Error(`Missing required option: ${ option }`)
+export default function ensureRequired(schema: ClipmanOptionSchema, options: ClipmanInputOptions) {
+  for (const field in schema) {
+    const attr = schema[field]
+    if (attr.required && !has(options, field)) {
+      if (attr.required === true) {
+        throw new Error(`Missing required option: ${ field }`)
       }
-      if (config[option].required.if) {
-        const tpl = `<% if (${ config[option].required.if }) { %>OK<% } %>`
-        const output = applyTemplate(tpl, { options: params })
+      if (attr.required.if) {
+        const tpl = `<% if (${ attr.required.if }) { %>OK<% } %>`
+        const output = applyTemplate(tpl, { options: options })
         if (output === 'OK') {
-          throw new Error(`Missing required option: ${ option }`)
+          throw new Error(`Missing required option: ${ field }`)
         }
       }
     }

@@ -1,32 +1,30 @@
 import ensureRequired from "./ensureRequired"
 
-function expectToPass(config: any, input: any, result: any) {
-  expect(ensureRequired(config, input)).toEqual(result)
+function expectToPass(config: any, input: any) {
+  expect(ensureRequired(config, input))
 }
 
 function expectToFail(config: any, input: any, errorMessage: string) {
-  return expect(ensureRequired(config, input))
-    .rejects
-    .toHaveProperty('message', errorMessage)
+  expect(() => ensureRequired(config, input))
+    .toThrowError(errorMessage)
 }
 
-test('it should fail if a required option is missing', async () => {
-  await expectToFail(
-      { foo: { required: true } },
+test('it should fail if a required option is missing', () => {
+  expectToFail(
+    { foo: { required: true } },
     {},
     'Missing required option: foo'
   )
 })
 
-test.only('it should pass if required option is present', async () => {
-  await expectToPass(
+test('it should pass if required option is present', () => {
+  expectToPass(
     { foo: { required: true, type: 'boolean' } },
     { foo: true },
-    { foo: true }
   )
 })
 
-test('it should fail if a conditional required option is missing', async () => expectToFail(
+test('it should fail if a conditional required option is missing', () => expectToFail(
   {
     foo: {
       required: {
@@ -41,8 +39,8 @@ test('it should fail if a conditional required option is missing', async () => e
   'Missing required option: foo'
 ))
 
-test('it should pass if a conditional required is met', async () => {
-  await expectToPass(
+test('it should pass if a conditional required is met', () => {
+  expectToPass(
     {
       foo: {
         required: {
@@ -54,6 +52,5 @@ test('it should pass if a conditional required is met', async () => {
       }
     },
     { bar: 1 },
-    { bar: 1 }
   )
 })
