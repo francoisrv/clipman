@@ -93,3 +93,4 @@ Hello node!
 - [Config](here.md)
 - [JS API](./docs/js-api.md)
 - [Options](./docs/options.md)
+- [Usage](./docs/usage.md)
