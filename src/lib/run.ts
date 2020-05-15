@@ -7,7 +7,7 @@ import shortid from 'shortid'
 import { promisify } from 'util'
 import { readFile, stat } from 'fs'
 
-import { ClipmanOptions, ClipmanInputOptions } from '../types'
+import { ClipmanInputOptions } from '../types'
 import help, { usage } from './help'
 import getJson from '../helpers/getJson'
 import findContext from '../helpers/findContext'

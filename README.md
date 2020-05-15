@@ -90,7 +90,7 @@ Hello node!
 
 - [Build for npm](here.md)
 - [Commands](here.md)
-- [Config](here.md)
+- [Config](./docs/config.md)
 - [JS API](./docs/js-api.md)
 - [Options](./docs/options.md)
 - [Usage](./docs/usage.md)
