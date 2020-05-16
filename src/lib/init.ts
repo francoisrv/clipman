@@ -1,7 +1,7 @@
 import { promisify } from "util"
 import { mkdir, writeFile } from "fs"
 import { compact } from "lodash"
-import { basename, join } from "path"
+import { basename, join, isAbsolute } from "path"
 import { YOUR_APP_IS_READY } from "../messages"
 
 async function createDirectory(dir: string) {
@@ -14,7 +14,8 @@ export default async function init(app: string) {
   if (!app) {
     throw new Error('Missing app')
   }
-  const bits = compact(app.split(/\//))
+  const path = isAbsolute(app) ? app : join(process.cwd(), app)
+  const bits = compact(path.split(/\//))
   const size = bits.length
   const dir = ['']
   for (let i = 0; i < size; i++) {
