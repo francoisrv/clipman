@@ -12,3 +12,7 @@ test('it should cast string to number', () => {
 test('it should cast string to boolean', () => {
   expect(applyType(ClipmanOptionType.boolean, 'true')).toEqual(true)
 })
+
+test('it should cast string to object', () => {
+  expect(applyType(ClipmanOptionType.object, { foo: 1 })).toEqual({ foo: 1 })
+})

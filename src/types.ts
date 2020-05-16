@@ -35,6 +35,8 @@ export enum ClipmanOptionType {
   string = 'string',
   boolean = 'boolean',
   number = 'number',
+  object = 'object',
+  array = 'array',
 }
 
 export type ClipmanOptionValue =

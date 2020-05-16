@@ -1,6 +1,6 @@
 {
   "name": "clipman",
-  "version": "1.8.0",
+  "version": "1.8.2",
   "private": false,
   "description": "Helper to write and run nodejs apps from the terminal",
   "main": "dist/index.js",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@types/shortid": "0.0.29",
-    "castr": "0.0.0",
+    "castr": "^0.2.1",
     "clipop": "^1.0.3",
     "colors": "^1.4.0",
     "lodash": "^4.17.15"
