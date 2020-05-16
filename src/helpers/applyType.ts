@@ -12,5 +12,6 @@ export default function applyType(type: ClipmanOptionType, value: any): any {
     case ClipmanOptionType.string: return castr.toString(value)
     case ClipmanOptionType.boolean: return castr.toBoolean(value)
     case ClipmanOptionType.number: return castr.toNumber(value)
+    default: return castr.toString(value)
   }
 }

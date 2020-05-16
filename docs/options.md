@@ -141,11 +141,13 @@ You can also use [lodash templates](https://lodash.com/docs/4.17.15#template) in
 
 ## Types
 
-They are 3 types you can get:
+They are 5 types you can get:
 
 - string
 - number
 - boolean
+- object
+- array
 
 If none is specified, string is used
 
@@ -223,6 +225,32 @@ my-app --foo[0] 1 --bar[0].barz 1
     {
       "barz": true
     }
+  ]
+}
+```
+
+If you are expecting an object or an array that could be anything, you could use the `object` or `array` type:
+
+```json
+{
+  "options": {
+    "foo": { "type": "object" },
+    "bar": { "type": "array" }
+  }
+}
+```
+
+```bash
+my-app --foo.bar 1 --bar[0] 2
+```
+
+```json
+{
+  "foo": {
+    "bar": "1"
+  },
+  "bar": [
+    "2"
   ]
 }
 ```
